@@ -20,6 +20,16 @@ def test_data_loader_normalizes_valid_provider_data(monkeypatch):
     assert len(result) == 3
 
 
+def test_data_loader_normalizes_yfinance_multiindex(monkeypatch):
+    index = pd.date_range("2026-01-01", periods=3)
+    columns = pd.MultiIndex.from_tuples([("Close", "TEST"), ("Open", "TEST")])
+    data = pd.DataFrame([[100.0, 99.0], [101.0, 100.0], [102.0, 101.0]], index=index, columns=columns)
+    monkeypatch.setattr(loader.yf, "download", lambda *args, **kwargs: data)
+    result = fetch_price_data("TEST", "2026-01-01", "2026-01-05")
+    assert list(result.columns) == ["Close"]
+    assert result.iloc[-1, 0] == 102.0
+
+
 def test_data_loader_handles_empty_response(monkeypatch):
     monkeypatch.setattr(loader.yf, "download", lambda *args, **kwargs: pd.DataFrame())
     with pytest.raises(MarketDataError, match="No market data"):
