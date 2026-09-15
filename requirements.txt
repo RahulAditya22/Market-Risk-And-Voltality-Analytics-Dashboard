@@ -1,0 +1,10 @@
+pandas==2.3.3
+numpy==2.3.3
+yfinance==0.2.65
+plotly==6.3.0
+streamlit==1.49.1
+pytest==8.4.2
+pytest-cov==6.3.0
+ruff==0.13.0
+black==25.9.0
+setuptools==80.9.0
