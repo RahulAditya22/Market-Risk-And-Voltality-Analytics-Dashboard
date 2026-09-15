@@ -50,6 +50,7 @@ project-root/
 │   ├── test_correlation.py
 │   ├── test_regimes.py
 │   ├── test_data_loader.py
+│   ├── test_plotting.py
 │   └── test_app_smoke.py
 ├── docs/
 ├── .github/workflows/ci.yml
@@ -69,7 +70,7 @@ Use a true `src` package layout:
 src/market_risk/
 ```
 
-Application and tests import the installed package as `market_risk`, never as `src.market_risk`. The package is installed through `pyproject.toml` in local development and CI. Render uses the same install step. This removes the previous project's fragile split between `src.*` and package imports; that project needed a corrective import-path commit and a separate CI smoke-check commit. fileciteturn13file0L3-L11
+Application and tests import the installed package as `market_risk`, never as `src.market_risk`. The package is installed through `pyproject.toml` in local development and CI. Render uses the same install step. This deliberately avoids the previous project's fragile split between `src.*` and package imports.
 
 The production start command therefore does not depend on an ad-hoc `PYTHONPATH` assignment.
 
@@ -77,7 +78,7 @@ The production start command therefore does not depend on an ad-hoc `PYTHONPATH`
 
 `data_loader.py` is the only layer allowed to call `yfinance`. It returns a normalized price DataFrame or a defined data-access error. Calculation modules accept DataFrames/Series supplied by callers and never call the network.
 
-This boundary makes unit tests deterministic and prevents provider rate limits from affecting financial formula tests. The previous project required a later fix to mock `yfinance` because CLI tests were reaching external-data behavior. fileciteturn14file0L3-L11
+This boundary makes unit tests deterministic and prevents provider rate limits from affecting financial formula tests.
 
 ## Validation boundary
 
@@ -89,7 +90,7 @@ Financial calculations are pure functions wherever practical. They use decimal r
 
 ## UI boundary
 
-`app/streamlit_app.py` owns Streamlit controls, caching, orchestration, and presentation. It should not contain formulas or provider-specific code. Importing the module for smoke tests must not trigger a network request.
+`app/streamlit_app.py` owns Streamlit controls, caching, orchestration, and presentation. It should not contain formulas or provider-specific code. Importing the module for smoke tests must not trigger a network request. Live data retrieval starts only after the user explicitly clicks **Run analysis**.
 
 ## Caching
 
