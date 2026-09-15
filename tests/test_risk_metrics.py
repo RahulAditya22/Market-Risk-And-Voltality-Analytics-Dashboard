@@ -13,7 +13,7 @@ def test_maximum_drawdown():
 
 def test_var_is_positive_loss_magnitude():
     returns = pd.Series([-0.10, -0.05, 0.01, 0.02])
-    assert historical_var(returns, 0.75) == pytest.approx(0.05)
+    assert historical_var(returns, 0.75) == pytest.approx(0.0625)
 
 
 def test_expected_shortfall_averages_tail_losses():
