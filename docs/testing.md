@@ -19,7 +19,7 @@ Pure financial functions are tested against deterministic, hand-verifiable fixtu
 - rate-limit-like failure;
 - malformed columns/data.
 
-The test suite never calls Yahoo Finance. This is deliberate because the previous project had tests that had to be retrofitted to mock `yfinance` after rate-limit behavior interfered with deterministic tests. fileciteturn14file0L3-L11
+The test suite never calls Yahoo Finance. This prevents external rate limits or provider changes from making formula tests nondeterministic.
 
 ### 3. Integration tests
 
@@ -27,9 +27,9 @@ Integration tests exercise the pipeline from a deterministic DataFrame through v
 
 ### 4. Streamlit smoke test
 
-Import the Streamlit entry module under the same package installation assumptions used in CI and Render. Startup must not perform a live network request merely because the module is imported.
+Import the Streamlit entry module under the same package installation assumptions used in CI and Render. Importing the module must not perform a live network request.
 
-A second local smoke check runs Streamlit using the production-style command and verifies the process can start without a traceback when live data is not required for module initialization.
+The dashboard itself exposes a **Run analysis** action, so a production-style Streamlit process can start and render the control surface without requiring live market data. Live retrieval begins only after explicit user action.
 
 ## Coverage
 
@@ -66,7 +66,7 @@ pytest + coverage
 Streamlit import/startup smoke test
 ```
 
-There are no scheduled workflows, notification bots, or screenshot jobs attached to normal pushes.
+There are no scheduled workflows, notification bots, screenshot jobs, or email integrations attached to normal pushes.
 
 ## External-data failure policy
 
@@ -79,11 +79,11 @@ No fallback is introduced solely to make tests pass. If demo data is ever added,
 Before Render deployment:
 1. run the complete local test suite;
 2. run Ruff and Black checks;
-3. run the Streamlit startup smoke test using production-style assumptions;
+3. run the Streamlit import and production-style startup smoke test;
 4. verify the final dependency and Python versions;
 5. inspect repository contents for secrets and temporary workflows;
 6. deploy once after CI is green.
 
-After deployment, verify the actual live application: startup, title, sidebar, data retrieval, charts, metrics, control changes, and graceful invalid/no-data behavior.
+After deployment, verify the actual live application: startup, title, sidebar, data retrieval after clicking Run analysis, charts, metrics, control changes, and graceful invalid/no-data behavior.
 
 A green deployment status alone is not considered proof that the application works.
