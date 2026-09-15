@@ -50,6 +50,14 @@ def main() -> None:
             value=DEFAULT_VAR_CONFIDENCE,
             format_func=lambda value: f"{value:.0%}",
         )
+        if st.button("Run analysis", type="primary"):
+            st.session_state["run_analysis"] = True
+
+    if not st.session_state.get("run_analysis", False):
+        st.info("Select the analysis controls, then click **Run analysis** to retrieve historical data.")
+        st.caption("Live data is retrieved only after an explicit user action.")
+        st.caption("Educational / analytical use only. Not financial advice.")
+        return
 
     if start_date >= end_date:
         st.error("Start date must be earlier than end date.")
