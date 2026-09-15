@@ -32,7 +32,9 @@ def fetch_price_data(
         raise MarketDataError("No market data was returned for the selected period.")
 
     if isinstance(data.columns, pd.MultiIndex):
-        close_columns = [column for column in data.columns if column[0] == "Close"]
+        close_columns = [
+            column for column in data.columns if "Close" in {str(level) for level in column}
+        ]
         if not close_columns:
             raise MarketDataError("The market-data response does not contain Close prices.")
         data = data.loc[:, close_columns]
